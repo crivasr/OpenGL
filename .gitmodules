@@ -1,3 +1,7 @@
 [submodule "include/glfw"]
 	path = include/glfw
 	url = git@github.com:glfw/glfw
+[submodule "include/glad"]
+	path = include/glad
+	url = https://github.com/Dav1dde/glad
+	branch = master
