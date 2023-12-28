@@ -18,7 +18,11 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # Add source files
-set(SOURCE_FILES ./src/main.cpp ./src/Shader.cpp ./src/Window.cpp)
+set(SOURCE_FILES 
+    "${CMAKE_SOURCE_DIR}/src/main.cpp"
+    "${CMAKE_SOURCE_DIR}/src/Shader.cpp"
+    "${CMAKE_SOURCE_DIR}/src/Window.cpp"
+)
 
 # Add compiler flags
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wpedantic -Wextra")
@@ -27,8 +31,14 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wpedantic -Wextra")
 add_executable(learnOpenGL ${SOURCE_FILES})
 
 # Copy shaders to resources folder
-FILE(COPY src/resources/shaders/test.vert DESTINATION "${CMAKE_BINARY_DIR}/resources/shaders/")
-FILE(COPY src/resources/shaders/test.frag DESTINATION "${CMAKE_BINARY_DIR}/resources/shaders/")
+add_custom_target(copy_shaders ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_SOURCE_DIR}/src/resources/shaders"
+        "${CMAKE_BINARY_DIR}/resources/shaders"
+    COMMENT "Copying shaders to resources folder"
+)
+
+add_dependencies(learnOpenGL copy_shaders)
 
 # Link libraries
 target_link_libraries(learnOpenGL glfw glad ${GLFW_LIBRARIES})
