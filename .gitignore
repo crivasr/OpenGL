@@ -1,2 +1,6 @@
 build
 .vscode
+.cache
+
+./src/glad.c
+./include/glad/glad.h
