@@ -2,15 +2,11 @@
 
 #include <glad/glad.h>
 
-#include <cerrno>
 #include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <format>
-#include <iostream>
-#include <sstream>
 #include <string>
-#include <vector>
 
 #ifdef __WIN32__
 #include <Windows.h>

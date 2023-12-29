@@ -15,7 +15,6 @@ add_subdirectory(include/glad)
 
 # Include directories
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # Add source files
 set(SOURCE_FILES 
@@ -41,4 +40,4 @@ add_custom_target(copy_shaders ALL
 add_dependencies(learnOpenGL copy_shaders)
 
 # Link libraries
-target_link_libraries(learnOpenGL glfw glad ${GLFW_LIBRARIES})
+target_link_libraries(learnOpenGL glfw glad)

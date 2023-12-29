@@ -1,12 +1,5 @@
-#include <cstdlib>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
-#include <cmath>
-
-#include <iostream>
-#include <string>
-#include <vector>
 
 #include "Shader.hpp"
 #include "Window.hpp"
