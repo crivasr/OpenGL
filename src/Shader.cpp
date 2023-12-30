@@ -4,9 +4,10 @@
 
 #include <cstring>
 #include <filesystem>
-#include <fstream>
 #include <format>
+#include <fstream>
 #include <string>
+#include <stdexcept>
 
 #ifdef __WIN32__
 #include <Windows.h>
@@ -15,7 +16,7 @@
 void Shader::add(const std::string& shaderName, const Shader::Type& type) const {
 
     if (type == Type::PROGRAM) {
-        throw std::string("Shader::add | Type can't be program");
+        throw std::runtime_error("Shader::add | Type can't be program");
     }
 
 #ifdef __WIN32__
@@ -32,9 +33,9 @@ void Shader::add(const std::string& shaderName, const Shader::Type& type) const 
     file.open(fullPath);
 
     if (file.fail()) {
-        std::string errorMessage =
-                std::format("Shader::add | Failed to open file: {} | System Error: {}", fullPath, std::strerror(errno));
-        throw errorMessage;
+        const std::string errorMessage = std::format(
+                "Shader::add | Failed to open file: {} | System Error: {}", fullPath, std::to_string(errno));
+        throw std::runtime_error(errorMessage);
     }
 
     std::stringstream sourceBuffer;
@@ -57,14 +58,16 @@ void Shader::add(const std::string& shaderName, const Shader::Type& type) const 
 
 void Shader::checkCompileErrors(GLuint shader, Shader::Type type) {
     GLint success = 0;
+
+    constexpr size_t MAX_LENGTH = 512;
     switch (type) {
     case Shader::Type::PROGRAM:
         glGetProgramiv(shader, GL_LINK_STATUS, &success);
 
         if (success == GL_FALSE) {
-            GLchar infoLog[512];
-            glGetProgramInfoLog(shader, sizeof(infoLog), nullptr, infoLog);
-            throw std::string(infoLog);
+            std::array<GLchar, MAX_LENGTH> infoLog = {};
+            glGetProgramInfoLog(shader, sizeof(infoLog), nullptr, infoLog.data());
+            throw std::runtime_error(infoLog.data());
         }
 
         break;
@@ -72,9 +75,9 @@ void Shader::checkCompileErrors(GLuint shader, Shader::Type type) {
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 
         if (success == GL_FALSE) {
-            GLchar infoLog[512];
-            glGetShaderInfoLog(shader, sizeof(infoLog), nullptr, infoLog);
-            throw std::string(infoLog);
+            std::array<GLchar, MAX_LENGTH> infoLog = {};
+            glGetShaderInfoLog(shader, infoLog.size(), nullptr, infoLog.data());
+            throw std::runtime_error(infoLog.data());
         }
         break;
     }

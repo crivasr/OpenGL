@@ -3,23 +3,27 @@
 #include <glad/glad.h>
 
 #include <string>
+#include <stdexcept>
 
 class Shader {
     private:
     GLuint m_programID;
-    bool   m_deleted = false;
-    bool   m_linked  = false;
+    bool   m_linked = false;
 
     public:
     enum Type { VERTEX = GL_VERTEX_SHADER, FRAGMENT = GL_FRAGMENT_SHADER, PROGRAM = GL_PROGRAM };
 
     Shader() noexcept : m_programID(glCreateProgram()) {}
-
-    void deleteShader() noexcept {
-        m_deleted = true;
+    ~Shader() {
         glUseProgram(0);
         glDeleteProgram(m_programID);
     }
+
+    // Declare copy constructor, copy assignment operator, move constructor, and move assignment operator as deleted
+    Shader(const Shader &)            = delete;
+    Shader &operator=(const Shader &) = delete;
+    Shader(Shader &&)                 = delete;
+    Shader &operator=(Shader &&)      = delete;
 
     void add(const std::string &shaderName, const Type &type) const;
     void link() {
@@ -29,12 +33,8 @@ class Shader {
     }
 
     void use() const {
-        if (m_deleted) {
-            throw std::string("Shader::use | Program deleted, can't be used");
-        }
-
         if (!m_linked) {
-            throw std::string("Shader::use | Program not yet linked, can't be used");
+            throw std::runtime_error("Shader::use | Program not yet linked, can't be used");
         }
 
         glUseProgram(m_programID);

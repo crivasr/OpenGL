@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 
 #include <string>
+#include <stdexcept>
 
 GLFWwindow* createMainWindow(int width, int height, const char* window_name) {
     glfwInit();
@@ -18,14 +19,15 @@ GLFWwindow* createMainWindow(int width, int height, const char* window_name) {
     GLFWwindow* window = glfwCreateWindow(width, height, window_name, nullptr, nullptr);
     if (window == nullptr) {
         glfwTerminate();
-        throw std::string("createMainWindow | Failed to create GLFW window\n");
+        throw std::runtime_error("createMainWindow | Failed to create GLFW window\n");
     }
 
     glfwMakeContextCurrent(window);
 
-    if (gladLoadGLLoader((GLADloadproc)glfwGetProcAddress) != GL_TRUE) {
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    if (gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)) != GL_TRUE) {
         glfwTerminate();
-        throw std::string("createMainWindow | Failed to initialize GLAD");
+        throw std::runtime_error("createMainWindow | Failed to initialize GLAD");
     }
 
     return window;
