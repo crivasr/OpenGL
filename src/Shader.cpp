@@ -2,6 +2,7 @@
 
 #include <glad/glad.h>
 
+#include <array>
 #include <cstring>
 #include <filesystem>
 #include <format>
@@ -22,7 +23,7 @@ void Shader::add(const std::string& shaderName, const Shader::Type& type) const 
 #ifdef __WIN32__
     char pathBuffer[MAX_PATH];
     GetModuleFileName(nullptr, pathBuffer, MAX_PATH);
-    std::filesystem::path path(pathBuffer); // TODO: Check if this works on windows
+    std::filesystem::path path(pathBuffer);
     std::string           pathToDirectory = path.parent_path().string();
 #else
     const std::string pathToDirectory = std::filesystem::canonical("/proc/self/exe").parent_path().string();

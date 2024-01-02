@@ -30,14 +30,14 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wpedantic -Wextra")
 add_executable(learnOpenGL ${SOURCE_FILES})
 
 # Copy shaders to resources folder
-add_custom_target(copy_shaders ALL
+add_custom_target(copy_resources ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CMAKE_SOURCE_DIR}/src/resources/shaders"
-        "${CMAKE_BINARY_DIR}/resources/shaders"
-    COMMENT "Copying shaders to resources folder"
+        "${CMAKE_SOURCE_DIR}/src/resources"
+        "${CMAKE_BINARY_DIR}/resources"
+    COMMENT "Copying resources to build folder"
 )
 
-add_dependencies(learnOpenGL copy_shaders)
+add_dependencies(learnOpenGL copy_resources)
 
 # Link libraries
 target_link_libraries(learnOpenGL glfw glad)

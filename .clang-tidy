@@ -9,6 +9,8 @@ Checks: '*,
         -modernize-use-trailing-return-type,
         -zircon-*,
         -hicpp-uppercase-literal-suffix, 
-        -readability-uppercase-literal-suffix'
+        -readability-uppercase-literal-suffix,
+        -cppcoreguidelines-avoid-magic-numbers,
+        -readability-magic-numbers'
 
 FormatStyle: file

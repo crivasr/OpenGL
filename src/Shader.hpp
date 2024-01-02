@@ -14,12 +14,11 @@ class Shader {
     enum Type { VERTEX = GL_VERTEX_SHADER, FRAGMENT = GL_FRAGMENT_SHADER, PROGRAM = GL_PROGRAM };
 
     Shader() noexcept : m_programID(glCreateProgram()) {}
-    ~Shader() {
-        glUseProgram(0);
-        glDeleteProgram(m_programID);
-    }
+    // We don't automatically delete the program, because it will crash if glfgTerminate() is called before
+    ~Shader() = default; 
 
-    // Declare copy constructor, copy assignment operator, move constructor, and move assignment operator as deleted
+    // Declare copy constructor, copy assignment operator, move constructor, and move assignment operator as
+    // deleted
     Shader(const Shader &)            = delete;
     Shader &operator=(const Shader &) = delete;
     Shader(Shader &&)                 = delete;
