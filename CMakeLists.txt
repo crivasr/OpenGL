@@ -9,9 +9,10 @@ set(GLAD_OUT_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE STRING "Output directory")
 set(GLAD_API "gl=3.3" CACHE STRING "API type/version pairs, like \"gl=3.2,gles=\", no version means latest")
 option(GLAD_ALL_EXTENSIONS "Include all extensions instead of those specified by GLAD_EXTENSIONS" ON)
 
-# Add GLFW and GLAD subdirectory
+# Add dependencies
 add_subdirectory(include/glfw)
 add_subdirectory(include/glad)
+add_subdirectory(include/glm)
 
 # Include directories
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
