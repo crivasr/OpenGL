@@ -12,10 +12,10 @@ option(GLAD_ALL_EXTENSIONS "Include all extensions instead of those specified by
 # Add dependencies
 add_subdirectory(include/glfw)
 add_subdirectory(include/glad)
-add_subdirectory(include/glm)
 
 # Include directories
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/glm)
 
 # Add source files
 set(SOURCE_FILES 
