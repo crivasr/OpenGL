@@ -9,3 +9,6 @@
 	path = include/glm
 	url = https://github.com/g-truc/glm/
 	branch = stable
+[submodule "include/assimp"]
+	path = include/assimp
+	url = https://github.com/assimp/assimp/
