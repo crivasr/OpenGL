@@ -11,6 +11,9 @@ Checks: '*,
         -hicpp-uppercase-literal-suffix, 
         -readability-uppercase-literal-suffix,
         -cppcoreguidelines-avoid-magic-numbers,
-        -readability-magic-numbers'
+        -readability-magic-numbers,
+        -misc-non-private-member-variables-in-classes,
+        -misc-no-recursion,
+        -cppcoreguidelines-special-member-functions'
 
 FormatStyle: file

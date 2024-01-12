@@ -12,17 +12,20 @@ option(GLAD_ALL_EXTENSIONS "Include all extensions instead of those specified by
 # Add dependencies
 add_subdirectory(include/glfw)
 add_subdirectory(include/glad)
+add_subdirectory(include/glm)
 add_subdirectory(include/assimp)
 
 # Include directories
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/glm)
 
 # Add source files
 set(SOURCE_FILES 
     "${CMAKE_SOURCE_DIR}/src/main.cpp"
     "${CMAKE_SOURCE_DIR}/src/Shader.cpp"
     "${CMAKE_SOURCE_DIR}/src/Window.cpp"
+    "${CMAKE_SOURCE_DIR}/src/Mesh.cpp"
+    "${CMAKE_SOURCE_DIR}/src/Model.cpp"
+    "${CMAKE_SOURCE_DIR}/src/fs_helpers.cpp"
 )
 
 # Add compiler flags
@@ -42,4 +45,4 @@ add_custom_target(copy_resources ALL
 add_dependencies(learnOpenGL copy_resources)
 
 # Link libraries
-target_link_libraries(learnOpenGL glfw glad)
+target_link_libraries(learnOpenGL glfw glad assimp glm)

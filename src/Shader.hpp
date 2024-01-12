@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glad/glad.h>
+#include <glm/glm.hpp>
 
 #include <string>
 #include <stdexcept>
@@ -14,21 +15,13 @@ class Shader {
     enum Type { VERTEX = GL_VERTEX_SHADER, FRAGMENT = GL_FRAGMENT_SHADER, PROGRAM = GL_PROGRAM };
 
     Shader() noexcept : m_programID(glCreateProgram()) {}
-    // We don't automatically delete the program, because it will crash if glfgTerminate() is called before
-    ~Shader() = default; 
-
-    // Declare copy constructor, copy assignment operator, move constructor, and move assignment operator as
-    // deleted
-    Shader(const Shader &)            = delete;
-    Shader &operator=(const Shader &) = delete;
-    Shader(Shader &&)                 = delete;
-    Shader &operator=(Shader &&)      = delete;
+    void deleteShader() const { glDeleteProgram(m_programID); }
 
     void add(const std::string &shaderName, const Type &type) const;
     void link() {
         m_linked = true;
         glLinkProgram(m_programID);
-        Shader::checkCompileErrors(m_programID, Shader::Type::PROGRAM);
+        Shader::checkCompileErrors(m_programID, Type::PROGRAM);
     }
 
     void use() const {
@@ -49,7 +42,13 @@ class Shader {
     void setInt(const std::string &name, int value) const {
         glUniform1i(glGetUniformLocation(m_programID, name.c_str()), value);
     }
+    void setUInt(const std::string &name, unsigned int value) const {
+        glUniform1ui(glGetUniformLocation(m_programID, name.c_str()), value);
+    }
     void setFloat(const std::string &name, float value) const {
         glUniform1f(glGetUniformLocation(m_programID, name.c_str()), value);
+    }
+    void setMat4(const std::string &name, const glm::mat4 &mat) const {
+        glUniformMatrix4fv(glGetUniformLocation(m_programID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
 };
