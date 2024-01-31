@@ -22,6 +22,9 @@ void Camera::processKeyboard() {
     if (Input::isKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
         m_position += rotated_front * m_speed;
     }
+    if (Input::isKeyPressed(GLFW_KEY_W)) {
+        m_position += rotated_front * m_speed;
+    }
     if (Input::isKeyPressed(GLFW_KEY_S)) {
         m_position -= rotated_front * m_speed;
     }
