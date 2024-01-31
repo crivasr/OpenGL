@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 
-#include "Shader.hpp"
+#include <Shader.hpp>
 
 class Mesh {
     public:
@@ -21,7 +21,10 @@ class Mesh {
         std::string  path;
     };
 
-    Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
+    Mesh(std::vector<Vertex>       vertices,
+         std::vector<unsigned int> indices,
+         std::vector<Texture>      textures,
+         float                     shininess);
 
     void deleteMesh() {
         glDeleteVertexArrays(1, &VAO);
@@ -33,9 +36,10 @@ class Mesh {
 
     private:
     // mesh data
-    std::vector<Vertex>       vertices;
-    std::vector<unsigned int> indices;
-    std::vector<Texture>      textures;
+    std::vector<Vertex>       m_vertices;
+    std::vector<unsigned int> m_indices;
+    std::vector<Texture>      m_textures;
+    float                     m_shininess;
 
     //  render data
     unsigned int VAO = 0;

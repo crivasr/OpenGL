@@ -17,15 +17,18 @@ add_subdirectory(include/assimp)
 
 # Include directories
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # Add source files
 set(SOURCE_FILES 
     "${CMAKE_SOURCE_DIR}/src/main.cpp"
     "${CMAKE_SOURCE_DIR}/src/Shader.cpp"
     "${CMAKE_SOURCE_DIR}/src/Window.cpp"
-    "${CMAKE_SOURCE_DIR}/src/Mesh.cpp"
-    "${CMAKE_SOURCE_DIR}/src/Model.cpp"
-    "${CMAKE_SOURCE_DIR}/src/fs_helpers.cpp"
+    "${CMAKE_SOURCE_DIR}/src/Camera.cpp"
+    "${CMAKE_SOURCE_DIR}/src/Model/Mesh.cpp"
+    "${CMAKE_SOURCE_DIR}/src/Model/Model.cpp"
+    "${CMAKE_SOURCE_DIR}/src/Utility/fs_helpers.cpp"
+    "${CMAKE_SOURCE_DIR}/src/Utility/Input.cpp"
 )
 
 # Add compiler flags

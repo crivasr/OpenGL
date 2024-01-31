@@ -9,7 +9,7 @@
 #include <string>
 #include <stdexcept>
 
-#include "fs_helpers.hpp"
+#include <Utility/fs_helpers.hpp>
 
 void Shader::add(const std::string& shaderName, const Shader::Type& type) const {
 

@@ -1,9 +1,19 @@
 #include "Mesh.hpp"
-#include "glad/glad.h"
-#include <string>
 
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures)
-        : vertices(std::move(vertices)), indices(std::move(indices)), textures(std::move(textures)) {
+#include <Utility/OpenGlHeaders.hpp>
+
+#include <vector>
+#include <string>
+#include <iostream>
+
+Mesh::Mesh(std::vector<Vertex>       vertices,
+           std::vector<unsigned int> indices,
+           std::vector<Texture>      textures,
+           float                     shininess)
+        : m_vertices(std::move(vertices)),
+          m_indices(std::move(indices)),
+          m_textures(std::move(textures)),
+          m_shininess(shininess) {
     setupMesh();
 }
 
@@ -16,13 +26,13 @@ void Mesh::setupMesh() {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
     // GLsizeiptr is a signed, if there are too many vertices or indices, it will overflow and result in a negative size
-    const GLsizeiptr verticesSize = vertices.size() * sizeof(Vertex);
-    const GLsizeiptr indicesSize  = indices.size() * sizeof(unsigned int);
+    const GLsizeiptr verticesSize = m_vertices.size() * sizeof(Vertex);
+    const GLsizeiptr indicesSize  = m_indices.size() * sizeof(unsigned int);
 
-    glBufferData(GL_ARRAY_BUFFER, verticesSize, vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, verticesSize, m_vertices.data(), GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesSize, indices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesSize, m_indices.data(), GL_STATIC_DRAW);
 
     const unsigned int positionIndex = 0;
     const unsigned int normalIndex   = 1;
@@ -51,27 +61,35 @@ void Mesh::setupMesh() {
     glBindVertexArray(0);
 }
 
-constexpr std::string DIFFUSE = "texture_diffuse";
-
 void Mesh::Draw(Shader &shader) {
-    unsigned int diffuseNr  = 1;
-    unsigned int specularNr = 1;
+    std::string DIFFUSE   = "texture_diffuse";
+    std::string SPECULAR  = "texture_specular";
+    std::string ROUGHNESS = "texture_roughness";
 
-    for (unsigned int i = 0; i < textures.size(); i++) {
-        const auto texture = textures[i];
+    unsigned int diffuseNr   = 1;
+    unsigned int specularNr  = 1;
+    unsigned int roughnessNr = 1;
+
+    for (unsigned int i = 0; i < m_textures.size(); i++) {
+        const auto texture = m_textures[i];
 
         glActiveTexture(GL_TEXTURE0 + i);
 
-        std::string number = texture.type == DIFFUSE ? std::to_string(diffuseNr++) : std::to_string(specularNr++);
+        std::string number = texture.type == DIFFUSE     ? std::to_string(diffuseNr++)
+                             : texture.type == SPECULAR  ? std::to_string(specularNr++)
+                             : texture.type == ROUGHNESS ? std::to_string(roughnessNr++)
+                                                         : "";
 
-        shader.setUInt("material." + texture.type + number, i);
+        shader.setInt(texture.type + number, (int)i);
         glBindTexture(GL_TEXTURE_2D, texture.id);
     }
+
+    shader.setFloat("material_shininess", m_shininess);
 
     glActiveTexture(GL_TEXTURE0);
 
     // draw mesh
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
 }

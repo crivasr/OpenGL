@@ -1,20 +1,25 @@
 #include "Model.hpp"
+#include "assimp/material.h"
+#include "glad/glad.h"
 
 #include <filesystem>
 #include <stdexcept>
 #include <string>
 #include <format>
 #include <unordered_map>
-#include <utility>
 #include <vector>
+
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
+#include <iostream>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
-#include "fs_helpers.hpp"
+#include <Utility/fs_helpers.hpp>
 #include "Mesh.hpp"
-
-#include <iostream>
 
 void Model::loadModel(const std::string &modelName) {
     std::filesystem::path path = fs_helpers::getPathToModel(modelName);
@@ -31,7 +36,6 @@ void Model::loadModel(const std::string &modelName) {
     processNode(scene->mRootNode, scene);
 }
 
-// NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 void Model::processNode(aiNode *node, const aiScene *scene) {
     // process all the node's meshes (if any)
     for (size_t i = 0; i < node->mNumMeshes; i++) {
@@ -50,6 +54,7 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
     std::vector<unsigned int>  indices;
     std::vector<Mesh::Texture> textures;
 
+    // NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic)
     for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
         Mesh::Vertex vertex{};
 
@@ -70,6 +75,7 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
     }
 
     aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
+    // NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
     std::vector<Mesh::Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
     textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
@@ -78,14 +84,22 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
             loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
     textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
-    return {vertices, indices, textures};
+    std::vector<Mesh::Texture> roughnessMaps =
+            loadMaterialTextures(material, aiTextureType_METALNESS, "texture_roughness");
+    textures.insert(textures.end(), roughnessMaps.begin(), roughnessMaps.end());
+
+    float defaultShiniess = 32.0f;
+    float shininess       = material->Get(AI_MATKEY_SHININESS, shininess) == AI_SUCCESS ? shininess : defaultShiniess;
+
+    return {vertices, indices, textures, shininess};
 };
-// NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
 std::vector<Mesh::Texture> Model::loadMaterialTextures(aiMaterial        *mat,
                                                        aiTextureType      type,
                                                        const std::string &typeName) {
     std::vector<Mesh::Texture> textures;
+    std::cout << "loadMaterialTextures | " << typeName << std::endl;
+    std::cout << "loadMaterialTextures | " << mat->GetTextureCount(type) << std::endl;
     for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
         aiString texturePath;
         mat->GetTexture(type, i, &texturePath);
@@ -119,7 +133,7 @@ GLuint Model::getTextureId(const std::string &texturePath) {
     unsigned char *dataTexture = stbi_load(path.c_str(), &widthTex, &heightTex, &nrChannelsTex, 0);
 
     if (dataTexture == nullptr) {
-        throw std::runtime_error(std::format("stbi_load | {}", stbi_failure_reason()));
+        throw std::runtime_error(std::format("stbi_load | {} | {}", stbi_failure_reason(), path.c_str()));
     }
 
     GLenum format = 0;

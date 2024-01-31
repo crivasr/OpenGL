@@ -1,6 +1,5 @@
 #pragma once
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include <Utility/OpenGlHeaders.hpp>
 
 GLFWwindow* createMainWindow(int width, int height, const char* window_name);
