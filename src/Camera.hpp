@@ -26,7 +26,8 @@ class Camera {
     float m_near{0.1f};
     float m_far{100.0f};
 
-    float m_speed{0.05f};
+    float m_fast_speed{0.1f};
+    float m_slow_speed{0.05f};
 
     void processKeyboard();
     void processMouse();

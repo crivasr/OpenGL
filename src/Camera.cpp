@@ -19,26 +19,25 @@ void Camera::processKeyboard() {
                               glm::rotate(glm::mat4(1.0f), glm::radians(m_rotation.x), glm::vec3(1.0f, 0.0f, 0.0f)) *
                               glm::vec4(m_front, 1.0f);
 
-    if (Input::isKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
-        m_position += rotated_front * m_speed;
-    }
+    float speed = Input::isKeyPressed(GLFW_KEY_LEFT_SHIFT) ? m_fast_speed : m_slow_speed;
+
     if (Input::isKeyPressed(GLFW_KEY_W)) {
-        m_position += rotated_front * m_speed;
+        m_position += rotated_front * speed;
     }
     if (Input::isKeyPressed(GLFW_KEY_S)) {
-        m_position -= rotated_front * m_speed;
+        m_position -= rotated_front * speed;
     }
     if (Input::isKeyPressed(GLFW_KEY_A)) {
-        m_position -= glm::normalize(glm::cross(rotated_front, m_up)) * m_speed;
+        m_position -= glm::normalize(glm::cross(rotated_front, m_up)) * speed;
     }
     if (Input::isKeyPressed(GLFW_KEY_D)) {
-        m_position += glm::normalize(glm::cross(rotated_front, m_up)) * m_speed;
+        m_position += glm::normalize(glm::cross(rotated_front, m_up)) * speed;
     }
     if (Input::isKeyPressed(GLFW_KEY_SPACE)) {
-        m_position += m_up * m_speed;
+        m_position += m_up * speed;
     }
     if (Input::isKeyPressed(GLFW_KEY_LEFT_CONTROL)) {
-        m_position -= m_up * m_speed;
+        m_position -= m_up * speed;
     }
 
     m_view = glm::lookAt(m_position, m_position + rotated_front, m_up);
