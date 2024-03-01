@@ -20,6 +20,7 @@
 
 #include <Utility/fs_helpers.hpp>
 #include "Mesh.hpp"
+#include "Texture.hpp"
 
 void Model::loadModel(const std::string &modelName) {
     std::filesystem::path path = fs_helpers::getPathToModel(modelName);
@@ -36,6 +37,7 @@ void Model::loadModel(const std::string &modelName) {
     processNode(scene->mRootNode, scene);
 }
 
+// NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 void Model::processNode(aiNode *node, const aiScene *scene) {
     // process all the node's meshes (if any)
     for (size_t i = 0; i < node->mNumMeshes; i++) {
@@ -48,6 +50,7 @@ void Model::processNode(aiNode *node, const aiScene *scene) {
         processNode(node->mChildren[i], scene);
     }
 }
+// NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
 Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
     std::vector<Mesh::Vertex>  vertices;
@@ -77,15 +80,15 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
     aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
     // NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
-    std::vector<Mesh::Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+    std::vector<Mesh::Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, ::Texture::DIFFUSE);
     textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
     std::vector<Mesh::Texture> specularMaps =
-            loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+            loadMaterialTextures(material, aiTextureType_SPECULAR, ::Texture::SPECULAR);
     textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
     std::vector<Mesh::Texture> roughnessMaps =
-            loadMaterialTextures(material, aiTextureType_METALNESS, "texture_roughness");
+            loadMaterialTextures(material, aiTextureType_METALNESS, ::Texture::ROUGHNESS);
     textures.insert(textures.end(), roughnessMaps.begin(), roughnessMaps.end());
 
     float defaultShiniess = 32.0f;
@@ -154,8 +157,8 @@ GLuint Model::getTextureId(const std::string &texturePath) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
     glTexImage2D(GL_TEXTURE_2D, 0, format, widthTex, heightTex, 0, format, GL_UNSIGNED_BYTE, dataTexture);
     glGenerateMipmap(GL_TEXTURE_2D);

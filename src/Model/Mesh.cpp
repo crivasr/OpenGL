@@ -1,5 +1,7 @@
 #include "Mesh.hpp"
 
+#include "Texture.hpp"
+
 #include <Utility/OpenGlHeaders.hpp>
 
 #include <vector>
@@ -62,23 +64,21 @@ void Mesh::setupMesh() {
 }
 
 void Mesh::Draw(Shader &shader) {
-    std::string DIFFUSE   = "texture_diffuse";
-    std::string SPECULAR  = "texture_specular";
-    std::string ROUGHNESS = "texture_roughness";
-
     unsigned int diffuseNr   = 1;
     unsigned int specularNr  = 1;
     unsigned int roughnessNr = 1;
 
+    // BUG: If the mesh doesn't have one of the texture types,
+    // the shader will use the last texture of that type
     for (unsigned int i = 0; i < m_textures.size(); i++) {
         const auto texture = m_textures[i];
 
         glActiveTexture(GL_TEXTURE0 + i);
 
-        std::string number = texture.type == DIFFUSE     ? std::to_string(diffuseNr++)
-                             : texture.type == SPECULAR  ? std::to_string(specularNr++)
-                             : texture.type == ROUGHNESS ? std::to_string(roughnessNr++)
-                                                         : "";
+        std::string number = texture.type == ::Texture::DIFFUSE     ? std::to_string(diffuseNr++)
+                             : texture.type == ::Texture::SPECULAR  ? std::to_string(specularNr++)
+                             : texture.type == ::Texture::ROUGHNESS ? std::to_string(roughnessNr++)
+                                                                    : "";
 
         shader.setInt(texture.type + number, (int)i);
         glBindTexture(GL_TEXTURE_2D, texture.id);

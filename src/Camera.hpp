@@ -24,10 +24,10 @@ class Camera {
     float m_height{720.0f};
 
     float m_near{0.1f};
-    float m_far{100.0f};
+    float m_far{10000.0f};
 
-    float m_fast_speed{0.1f};
-    float m_slow_speed{0.05f};
+    float m_fast_speed{15.0f};
+    float m_slow_speed{5.0f};
 
     void processKeyboard();
     void processMouse();

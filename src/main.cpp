@@ -33,6 +33,7 @@ int main() {
         window = createMainWindow(width, height, windowName);
         glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     } catch (const std::string &error) {
         std::cerr << "Error creating window:\n" << error << std::endl;
         return 1;
@@ -40,7 +41,10 @@ int main() {
 
     glEnable(GL_DEPTH_TEST);
 
-    Model  backpack("backpack/backpack.obj");
+    Model teapot("teapot/teapot.obj");
+    Model backpack("backpack/backpack.obj");
+    Model yoda("yoda/yoda.obj");
+
     Shader defaultShader;
 
     try {
@@ -56,9 +60,6 @@ int main() {
 
     defaultShader.use();
 
-    glm::vec3 lightPos(0.0f, 0.0f, 0.0f);
-    defaultShader.setVec3("lightPos", lightPos);
-
     glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
     defaultShader.setVec3("lightColor", lightColor);
 
@@ -66,6 +67,8 @@ int main() {
     defaultShader.setVec3("ambientColor", ambientColor);
 
     glm::mat4 model(1.0f);
+    model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    // model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
     defaultShader.setMat4("model", model);
 
     Input::Init(window);
@@ -78,15 +81,17 @@ int main() {
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // NOLINT(hicpp-signed-bitwise)
 
-            glm::vec3 newLightPos = lightPos;
-            newLightPos           = camera.getPosition();
-            defaultShader.setVec3("lightPos", newLightPos);
+            // if (Input::isKeyPressed(GLFW_KEY_P)) {
+            defaultShader.setVec3("lightPos", camera.getPosition());
+            // }
 
             defaultShader.setVec3("viewPos", camera.getPosition());
             defaultShader.setMat4("view", camera.getView());
             defaultShader.setMat4("projection", camera.getProjection());
 
             backpack.Draw(defaultShader);
+            teapot.Draw(defaultShader);
+            yoda.Draw(defaultShader);
 
             glfwSwapBuffers(window);
             glfwPollEvents();
@@ -97,6 +102,8 @@ int main() {
     }
 
     backpack.deleteModel();
+    teapot.deleteModel();
+    yoda.deleteModel();
     defaultShader.deleteShader();
 
     glfwTerminate();

@@ -32,7 +32,7 @@ class Mesh {
         glDeleteBuffers(1, &EBO);
     }
 
-    void Draw(Shader &shader);
+    void Draw(Shader& shader);
 
     private:
     // mesh data

@@ -16,6 +16,40 @@ uniform vec3 lightPos;
 uniform vec3 lightColor;
 uniform vec3 viewPos;
 
+struct attenuation_t {
+    float constant;
+    float linear;
+    float quadratic;
+};
+
+struct lightColor_t {
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+
+struct directionalLight_t {
+    vec3 direction;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+
+struct pointLight_t {
+    vec3 position;
+    lightColor_t color;
+    attenuation_t attenuation;
+};
+
+struct spotLight_t {
+    vec3 position;
+    lightColor_t color;
+    attenuation_t attenuation;
+    vec3 direction;
+    float cutOff;
+    float outerCutOff;
+};
+
 void main() {
     vec3 normal = normalize(Normal);
     vec3 lightDir = normalize(lightPos - FragPos);
@@ -33,6 +67,7 @@ void main() {
     vec3 specular = pow(max(dot(reflectDir, viewDir), 0.0), exponent) * lightColor;
     vec3 specularColor = texture(texture_specular1, TexCoords).r * specular;
 
-    vec3 result = (ambientColor + diffuseColor + specularColor);
-    FragColor = vec4(result, 1.0);
+    vec3 result = ambientColor + diffuseColor + specularColor;
+
+    FragColor = vec4(diffuseColor, 1.0);
 }
